@@ -149,6 +149,18 @@ frameworks:
       version: "0.26.0"
       images:
         default: "vllm/vllm-openai-xpu:v0.26.0@sha256:e2ab50957fc309d3fb110e6331ab8bfb7dd4f0074df41cbbf0bc3c64c8bc0e52"
+  vllm_014:
+    base_framework: vllm
+    data_backend: vllm
+    collector_dir: "collector/vllm_014"
+    notes: >
+      vLLM 0.14.0 collector for SM80 GPUs (A800/A100). This is a dedicated
+      runtime because the main vllm collector targets 0.24.0+ and is
+      incompatible with 0.14.0 APIs.
+    default:
+      version: "0.14.0"
+      images:
+        default: "vllm/vllm-openai:v0.14.0"
   wideep_sglang:
     base_framework: sglang
     collector_dir: "collector/wideep/sglang"

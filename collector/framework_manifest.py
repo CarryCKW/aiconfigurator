@@ -114,6 +114,7 @@ _REGISTRY_MODULES = {
     "trtllm": "collector.trtllm.registry",
     "vllm": "collector.vllm.registry",
     "vllm_xpu": "collector.vllm.registry",
+    "vllm_014": "collector.vllm_014.registry",
     "wideep_sglang": "collector.wideep.sglang.registry",
     "wideep_vllm": "collector.wideep.vllm.registry",
     "wideep_trtllm": "collector.wideep.trtllm.registry",
