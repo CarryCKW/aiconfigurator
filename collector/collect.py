@@ -2388,6 +2388,62 @@ def collect_vllm(
     return all_errors, provenance_ctx
 
 
+def collect_vllm_014(
+    num_processes: int,
+    ops: list[str] | None = None,
+    limit: int | None = None,
+    shuffle: bool = False,
+    resume_options: dict | None = None,
+    model_path: str | None = None,
+    case_plan=None,
+    sm_version: int | None = None,
+    case_filters: list[str] | None = None,
+):
+    """Collect performance data for vLLM 0.14.0 (SM80 GPUs: A800/A100)"""
+    from collector.version_resolver import build_collections
+
+    from collector.vllm_014.registry import REGISTRY
+
+    try:
+        from vllm.version import __version__ as vllm_version
+
+        version = vllm_version
+    except Exception:
+        logger.exception("vLLM is not installed. Please install it from https://github.com/vllm-project/vllm")
+        return None, None
+
+    from collector.framework_manifest import require_collector_runtime
+
+    requested_ops = set(ops if ops is not None else (case_plan.ops if case_plan is not None else []))
+    runtime = require_collector_runtime("vllm_014", version, requested_ops=requested_ops, wideep_ops=set())
+
+    registry = REGISTRY
+    collections = build_collections(registry, "vllm_014", version, ops, logger=logger)
+    all_errors = collect_ops(
+        num_processes,
+        collections,
+        version,
+        limit=limit,
+        shuffle=shuffle,
+        backend="vllm_014",
+        resume_options=resume_options,
+        model_path=model_path,
+        case_plan=case_plan,
+        sm_version=sm_version,
+        case_filters=case_filters,
+    )
+
+    generate_collection_summary(all_errors, "vllm_014", version)
+    provenance_ctx = {
+        "framework": runtime.framework,
+        "installed_version": version,
+        "runtime": runtime,
+        "sm_version": sm_version,
+        "collections": collections,
+    }
+    return all_errors, provenance_ctx
+
+
 def collect_trtllm(
     num_processes: int,
     ops: list[str] | None = None,
@@ -5766,7 +5822,7 @@ def _finalize_collector_outputs_transaction_locked(
 def main():
     global logger
     parser = argparse.ArgumentParser(description="Collect performance data for backends")
-    parser.add_argument("--backend", type=str, choices=["trtllm", "sglang", "vllm"], default="trtllm")
+    parser.add_argument("--backend", type=str, choices=["trtllm", "sglang", "vllm", "vllm_014"], default="trtllm")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument(
         "--ops",
@@ -6081,7 +6137,7 @@ def main():
 
     # Use profiling context manager
     with ProfilerContext(args.backend, enabled=args.profile):
-        collect_backend = {"trtllm": collect_trtllm, "sglang": collect_sglang, "vllm": collect_vllm}[args.backend]
+        collect_backend = {"trtllm": collect_trtllm, "sglang": collect_sglang, "vllm": collect_vllm, "vllm_014": collect_vllm_014}[args.backend]
         run_errors, provenance_ctx = collect_backend(
             num_processes,
             ops,
