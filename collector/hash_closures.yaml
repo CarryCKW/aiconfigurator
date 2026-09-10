@@ -197,6 +197,23 @@ collector.vllm.collect_moe_xpu:
   - collector/cases/base_ops/moe.yaml
   - __model_cases__
 
+# --- vllm_014 (vLLM 0.14.0 for SM80 GPUs: A800/A100) --------------------
+collector.vllm_014.collect_attn:
+  - collector/vllm_014/collect_attn.py
+  - collector/vllm_014/utils.py
+  - collector/cases/base_ops/attention_context.yaml
+  - collector/cases/base_ops/attention_generation.yaml
+  - __model_cases__
+collector.vllm_014.collect_gemm:
+  - collector/vllm_014/collect_gemm.py
+  - collector/vllm_014/utils.py
+  - collector/cases/base_ops/gemm.yaml
+  - __model_cases__
+collector.vllm_014.collect_moe:
+  - collector/vllm_014/collect_moe.py
+  - collector/cases/base_ops/moe.yaml
+  - __model_cases__
+
 # --- network (standalone comm collectors) ------------------------------
 collector.network.slurm.collect_trtllm_alltoall:
   # moe_a2a (trtllm NVLink alltoall, standalone multi-node): the workload
