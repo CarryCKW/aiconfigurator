@@ -104,7 +104,6 @@ def get_moe_test_cases():
                     common_moe_testcase.tp,
                     common_moe_testcase.ep,
                     common_moe_testcase.model_name,
-                    "moe_perf.txt",
                     common_moe_testcase.token_expert_distribution,
                     common_moe_testcase.power_law_alpha,
                 ]
@@ -123,9 +122,9 @@ def run_moe_torch(
     moe_tp_size,
     moe_ep_size,
     model_name,
-    perf_filename,
     distributed="power_law",
     power_law_alpha=0.0,
+    perf_filename=None,
     device="cuda:0",
 ):
     """Run vLLM MoE performance benchmarking"""

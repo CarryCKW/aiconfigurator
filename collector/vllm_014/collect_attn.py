@@ -457,7 +457,6 @@ def get_context_attention_test_cases(if_unit_test=False):
                                 128,
                                 is_fp8_kv_cache,
                                 True,
-                                "context_attention_perf.txt",
                             ]
                         )
 
@@ -542,7 +541,6 @@ def get_generation_attention_test_cases():
                                 128,
                                 is_fp8_kv_cache,
                                 False,
-                                "generation_attention_perf.txt",
                             ]
                         )
     return test_cases

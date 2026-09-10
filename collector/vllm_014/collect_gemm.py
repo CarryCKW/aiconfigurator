@@ -76,7 +76,7 @@ def get_gemm_test_cases():
                 if sm >= 100 and (x % 4) != 0:
                     continue
 
-            test_cases.append([gemm_type, x, n, k, "gemm_perf.txt"])
+            test_cases.append([gemm_type, x, n, k])
 
     return test_cases
 
