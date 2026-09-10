@@ -146,9 +146,10 @@ RUN set -e; \
     fi
 
 # Install aic-core and aiconfigurator in development mode
+# Note: No --system flag because base image uses a virtual env at /opt/venv
 RUN cd /workspace && \
-    uv pip install --system --editable ./aic-core && \
-    uv pip install --system --editable "."
+    uv pip install --editable ./aic-core && \
+    uv pip install --editable .
 
 # Set environment variables
 ENV COLLECTOR_LOG_DIR=/workspace/collector/logs
