@@ -116,12 +116,39 @@ FROM nixl-env AS final
 # Install uv for Python package management (useful for collector)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Copy collector source code
-COPY collector/ /workspace/collector/
+# Install Rust toolchain for building aic-core (PyO3 extension)
+ENV RUSTUP_HOME=/opt/rust/rustup \
+    CARGO_HOME=/opt/rust/cargo \
+    PATH=/opt/rust/cargo/bin:${PATH}
 
-# Copy system definitions
-COPY aic-core/src/aiconfigurator_core/systems/*.yaml /workspace/aic-core/src/aiconfigurator_core/systems/
-COPY aic-core/src/aiconfigurator_core/systems/data/ /workspace/aic-core/src/aiconfigurator_core/systems/data/
+RUN curl --proto '=https' --tlsv1.2 -sSf --retry 5 --retry-connrefused --retry-delay 2 \
+        https://sh.rustup.rs -o /tmp/rustup-init.sh \
+    && sh /tmp/rustup-init.sh -y --profile minimal --default-toolchain 1.96.0 \
+    && rm /tmp/rustup-init.sh
+
+# Configure maturin for sparse protocol
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL="sparse"
+
+# Copy complete project source for building aiconfigurator
+COPY aic-core/ /workspace/aic-core/
+COPY src/ /workspace/src/
+COPY collector/ /workspace/collector/
+COPY pyproject.toml README.md LICENSE /workspace/
+
+# Verify Git LFS content is materialized
+RUN set -e; \
+    bad=$(grep -rlE "^version https://git-lfs" /workspace/aic-core/src/aiconfigurator_core/systems 2>/dev/null || true); \
+    if [ -n "$bad" ]; then \
+        echo "ERROR: Unmaterialized Git LFS pointer files found:" >&2; \
+        echo "$bad" >&2; \
+        echo "Run 'git lfs install && git lfs pull' in the source tree before building." >&2; \
+        exit 1; \
+    fi
+
+# Install aic-core and aiconfigurator in development mode
+RUN cd /workspace && \
+    uv pip install --system --editable ./aic-core && \
+    uv pip install --system --editable "."
 
 # Set environment variables
 ENV COLLECTOR_LOG_DIR=/workspace/collector/logs
