@@ -155,7 +155,7 @@ RUN cd /workspace && \
 ENV COLLECTOR_LOG_DIR=/workspace/collector/logs
 ENV PYTHONUNBUFFERED=1
 # UCX library path for NIXL
-ENV LD_LIBRARY_PATH=/tmp/ucx_install/lib:/tmp/ucx_install/lib/ucx:${LD_LIBRARY_PATH}
+# ENV LD_LIBRARY_PATH=/tmp/ucx_install/lib:/tmp/ucx_install/lib/ucx:${LD_LIBRARY_PATH}
 
 # Create directories for models and logs
 RUN mkdir -p /workspace/models /workspace/logs
