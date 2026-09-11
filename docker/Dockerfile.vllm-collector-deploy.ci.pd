@@ -72,7 +72,7 @@ RUN pip install --no-cache-dir \
     sentencepiece \
     transformers \
     accelerate \
-    nixl
+    nixl==0.9.0
 
 # ============================================================================
 # Stage 4: Install UCX + NIXL (required for PD disaggregated serving)
